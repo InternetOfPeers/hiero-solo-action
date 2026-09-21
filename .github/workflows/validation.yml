@@ -230,7 +230,7 @@ jobs:
 
   validate-json-rpc-relay:
     if: ${{ !github.event.pull_request.draft }}
-    runs-on: ubuntu-latest
+    runs-on: hl-hsa-lin-md
     steps:
       - name: Harden the runner (Audit all outbound calls)
         if: ${{ !env.ACT }}
