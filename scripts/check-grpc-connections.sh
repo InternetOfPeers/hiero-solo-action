@@ -4,8 +4,8 @@ set -e
 
 echo "🔍 Validating gRPC connections..."
 
-# Function to check if a port is listening. Uses bash's built-in /dev/tcp instead of nc/netstat,
-# neither of which is installed in the act runner image (catthehacker/ubuntu:act-latest).
+# Function to check if a port is listening. Uses bash's built-in /dev/tcp so the check
+# does not depend on extra tooling such as nc or netstat being installed on the runner.
 check_port() {
     local port=$1
     local service_name=$2

@@ -194,29 +194,6 @@ Use `installBlockNode: true` to provision a block node. The action reuses the ex
 
 The [README.md](./local/README.md) describes how to set up a local solo test network only with Docker.
 
-## Testing the Action Locally with `act`
-
-The jobs in [`.github/workflows/validation.yml`](./.github/workflows/validation.yml) exercise this action end-to-end (deploying a real Solo network via `kind`). They can be run locally with [`act`](https://github.com/nektos/act) instead of only via a GitHub Actions run:
-
-```shell
-brew install act # see https://github.com/nektos/act#installation for other platforms
-
-# Run every job in the workflow, one at a time (this deploys a full Solo test network per job and can take a long time)
-./scripts/test-action-with-act.sh
-
-# Run a single job
-./scripts/test-action-with-act.sh -j validate-outputs
-```
-
-Jobs are forced to run sequentially (`--concurrent-jobs 1`): every job deploys a `kind` cluster with the same hardcoded name (`solo-e2e`) and installs `solo` into the same shared `act` tool-cache volume, so running them concurrently causes `kind create cluster` name collisions and racing `npm install -g` processes that corrupt each other's install.
-
-Notes:
-
-- Requires a running Docker daemon; `kind` talks to it through the socket act mounts into the job container (the same approach used by [`local/compose.yaml`](./local/compose.yaml)).
-- The repo's [`.actrc`](./.actrc) pins the runner image to `catthehacker/ubuntu:act-latest`, which includes Docker, sudo, and apt — needed since the workflow installs its own toolchain (`kind`, `kubectl`, `helm`, Node.js, Java, Python).
-- On Apple Silicon, the tool-installation URLs in `action.yml` are hardcoded to `amd64` binaries; these run fine under Docker Desktop's Rosetta emulation without any extra flags. If you hit architecture-related failures, try `act --container-architecture linux/amd64 pull_request`.
-- The `Harden the runner` step is skipped automatically under `act` (`if: ${{ !env.ACT }}`) since it depends on GitHub-hosted runner internals.
-
 ## Tributes
 
 This action is based on the work of [Hiero Solo](https://github.com/hiero-ledger/solo).
